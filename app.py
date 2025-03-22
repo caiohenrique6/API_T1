@@ -6,10 +6,10 @@ app = Flask(__name__)
 
 #route --> endpoint
 
-@app.route("/pague")
+@app.route("/")
 def pagar_pessoas():
 
-    return "<h1>Começar a semana, pagando suas dividas, é bom demais</h1>"
+    return "<h1>Hello guys </h1>"
 
 def init_db():
     with sqlite3.connect("database.db") as conn:
@@ -29,9 +29,8 @@ init_db()
 
 @app.route("/doar", methods=["POST"])
 def doar():
-    dados = request.get_json
+    dados = request.get_json()
     print(f"dados:{dados}")
-
 
     titulo = dados.get("titulo")
     categoria = dados.get("categoria")
@@ -51,8 +50,28 @@ def doar():
 
     return jsonify({"mensagem": "Livro cadastrado com sucesso"}), 201
 
+@app.route("/livros", methods=["GET"])
+def listar_livros():
+
+    with sqlite3.connect("database.db") as conn:
+        livros = conn.execute("SELECT * FROM LIVROS").fetchall()
+
+        livros_formatados = []
+
+        for item in livros:
+            dicionario_livros ={
+                "id": item[0],
+                "titulo":item[1],
+                "categoria":item[2],
+                "autor":item[3],
+                "image_url":item[4]
+            }
+            livros_formatados.append(dicionario_livros)
+    
+    return jsonify(livros_formatados),201
 
 if __name__ == "__main__":
+
     app.run(debug=True)
 
 
